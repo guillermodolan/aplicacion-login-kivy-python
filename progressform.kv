@@ -1,0 +1,166 @@
+ScreenManager:
+    Screen:
+        name: "Pantalla0"
+        GridLayout:
+            cols: 1
+
+            Label:
+                text: 'Si no tienes una cuenta, por favor registrate'
+                font_size: 30
+            GridLayout:
+                cols: 2
+
+                Button:
+                    text: 'Registrarme'
+                    font_size: 30
+                    on_press: app.crear_tabla(); user.text = ""; psw.text = ""; vpsw.text = ""; email.text = ""; birthdate.text = ""; root.transition.direction = 'right'; root.current = "Pantalla1"
+                Button:
+                    font_size: 30
+                    text: 'Iniciar Sesión'
+                    on_press: name.text = ""; passw.text = ""; root.transition.direction = 'right'; root.current = "Pantalla3"
+
+    Screen:
+        name: "Pantalla1"
+        GridLayout:
+            rows: 6
+            cols: 2
+            padding: 10
+            spacing: 10
+
+            Label:
+                text: 'Usuario'
+                font_size: 30
+            TextInput:
+                id: user
+                multiline: False
+                on_focus:
+                    progress_bar.value = 0
+                    if user.text: progress_bar.value += 1
+                    if psw.text: progress_bar.value += 1
+                    if vpsw.text: progress_bar.value += 1
+                    if email.text: progress_bar.value += 1
+                    if birthdate.text: progress_bar.value += 1
+            Label:
+                text: 'Contraseña'
+                font_size: 30
+            TextInput:
+                id: psw
+                password: True
+                multiline: False
+                on_focus:
+                    progress_bar.value = 0
+                    if user.text: progress_bar.value += 1
+                    if psw.text: progress_bar.value += 1
+                    if vpsw.text: progress_bar.value += 1
+                    if email.text: progress_bar.value += 1
+                    if birthdate.text: progress_bar.value += 1
+            Label:
+                text: 'Valida contraseña'
+                font_size: 30
+            TextInput:
+                id: vpsw
+                password: True
+                multiline: False
+                on_focus:
+                    progress_bar.value = 0
+                    if user.text: progress_bar.value += 1
+                    if psw.text: progress_bar.value += 1
+                    if vpsw.text: progress_bar.value += 1
+                    if email.text: progress_bar.value += 1
+                    if birthdate.text: progress_bar.value += 1
+            Label:
+                text: 'Email'
+                font_size: 30
+            TextInput:
+                id: email
+                multiline: False
+                on_focus:
+                    progress_bar.value = 0
+                    if user.text: progress_bar.value += 1
+                    if psw.text: progress_bar.value += 1
+                    if vpsw.text: progress_bar.value += 1
+                    if email.text: progress_bar.value += 1
+                    if birthdate.text: progress_bar.value += 1
+            Label:
+                text: 'Fecha Nacimiento'
+                font_size: 30
+            TextInput:
+                id: birthdate
+                multiline: False
+                on_focus:
+                    progress_bar.value = 0
+                    if user.text: progress_bar.value += 1
+                    if psw.text: progress_bar.value += 1
+                    if vpsw.text: progress_bar.value += 1
+                    if email.text: progress_bar.value += 1
+                    if birthdate.text: progress_bar.value += 1
+            ProgressBar:
+                id: progress_bar
+                value: 0
+                max: 5
+
+            GridLayout:
+                cols: 2
+
+                Button:
+                    text: 'Volver'
+                    on_press:
+                        if app.login_name != "": root.transition.direction = 'right'; root.current = "Pantalla2"
+                        else: root.transition.direction = 'right'; root.current = "Pantalla0"; name.text = user.text
+
+                Button:
+                    text: 'Siguiente'
+                    on_press:
+                        progress_bar.value = 0
+                        if user.text: progress_bar.value += 1
+                        if psw.text: progress_bar.value += 1
+                        if vpsw.text: progress_bar.value += 1
+                        if email.text: progress_bar.value += 1
+                        if birthdate.text: progress_bar.value += 1
+                        if progress_bar.value != progress_bar.max: app.lbl.text = "Faltan campos"; app.popupUsuarioExistente.open()
+                        elif psw.text != vpsw.text: app.lbl.text = "Contraseñas no coinciden"; app.popupUsuarioExistente.open()
+                        elif app.login_name == "" and app.find_user(user.text) == None: app.agregar_usuario(user.text, psw.text, email.text, birthdate.text); root.transition.direction = 'left'; root.current = "Pantalla2"
+                        elif app.login_name == "": app.lbl.text = "Usuario ya existente"; app.popupUsuarioExistente.open()
+                        else: app.update_usuario(user.text, psw.text, email.text, birthdate.text); user.text = app.login_name; root.transition.direction = 'left'; root.current = "Pantalla2"
+
+                        name.text = user.text
+
+    Screen:
+        name: "Pantalla2"
+        GridLayout:
+            rows: 3
+            Label:
+                text: "Bienvenido " + name.text + "!"
+                font_size: 30
+            Button:
+                text: 'Ver datos'
+                on_press: root.transition.direction = 'left' ; root.current = 'Pantalla1'; user.text = app.login_name; psw.text = app.login_password; vpsw.text = app.login_password; email.text = app.login_email; birthdate.text = app.login_birthdate
+
+            Button:
+                text: 'Eliminar cuenta'
+                on_press: app.delete_user(user.text); user.text = ""; psw.text = ""; vpsw.text = ""; email.text = ""; birthdate.text = ""; root.transition.direction = 'left' ; root.current = 'Pantalla0'; name.text = ""; passw.text = ""; progress_bar.value = 0; app.login_name = ""
+
+    Screen:
+        name: "Pantalla3"
+        GridLayout:
+            rows: 3
+            Label:
+                text: 'Usuario'
+                font_size: 30
+            TextInput:
+                id: name
+                multiline: False
+            Label:
+                text: 'Contraseña'
+                font_size: 30
+            TextInput:
+                id: passw
+                password: True
+                multiline: False
+            Button:
+                text: 'Volver'
+                on_press: root.transition.direction = 'right'; root.current = "Pantalla0"
+            Button:
+                text: 'Iniciar sesión'
+                on_press:
+                    if app.login(name.text, passw.text): root.transition.direction = 'left'; root.current = "Pantalla2"
